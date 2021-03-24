@@ -2,7 +2,7 @@ from enum import Enum
 from pydantic import BaseModel
 from typing import Optional
 
-class DemoboardStatus(str, Enum):
+class CrutchStatus(str, Enum):
     ok = 'ok'
     emergency = 'emergency'
     error = 'error'
@@ -16,8 +16,8 @@ class Loc(BaseModel):
     latitude: float
     longitude: float
 
-class DemoboardSettings(BaseModel):
+class CrutchSettings(BaseModel):
     home_loc: Optional[Loc] = None
-    phone: Optional[str]
-    account: str
-    password: str
+    phone: Optional[str] = None
+    account: Optional[str] = None
+    password: Optional[str] = None

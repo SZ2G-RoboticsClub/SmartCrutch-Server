@@ -3,7 +3,7 @@ from typing import List
 
 from time import time
 
-class DemoBoard(object):
+class Crutch(object):
 
     OFFLINE_TIME_THRESHOLD: float = 8.0
 
@@ -15,32 +15,31 @@ class DemoBoard(object):
 
     def __init__(self, uuid: str):
         self.uuid = uuid
-        self.status = DemoboardStatus.offline
+        self.status = CrutchStatus.offline
         self.loc: Optional[Loc] = None
         self.last_conn_time = 0
-        self.settings = DemoboardSettings()
+        self.settings = CrutchSettings()
 
-    def update(self, status: DemoboardStatus):
+    def update(self, status: CrutchStatus):
         self.last_conn_time = time()
         self.status = status
 
-    def get_status(self) -> DemoboardStatus:
-        if self.status == DemoboardStatus.ok and time() - self.last_conn_time > self.OFFLINE_TIME_THRESHOLD:
-            return DemoboardStatus.offline
+    def get_status(self) -> CrutchStatus:
+        if self.status == CrutchStatus.ok and time() - self.last_conn_time > self.OFFLINE_TIME_THRESHOLD:
+            return CrutchStatus.offline
         return self.status
 
-    def update_settings(self, settings: DemoboardSettings):
+    def update_settings(self, settings: CrutchSettings):
         self.settings = settings
 
     def load_settings(self, settings: dict):
-        self.settings = DemoboardSettings()
+        self.settings = CrutchSettings()
 
+g_crutch: List[Crutch] = []
 
-g_demoboard: List[DemoBoard] = []
-
-def get_demoboard(uuid: str):
-    idx = g_demoboard.index(uuid)
+def get_crutch(uuid: str):
+    idx = g_crutch.index(Crutch(uuid))
     if not idx:
-        ret = DemoBoard(uuid)
-        return g_demoboard.append(ret)
-    return g_demoboard[idx]
+        ret = Crutch(uuid)
+        return g_crutch.append(ret)
+    return g_crutch[idx]
