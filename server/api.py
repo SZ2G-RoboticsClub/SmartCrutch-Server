@@ -53,37 +53,38 @@ def get_settings(uuid: str):
 
 # ============ Android app ============
 
-#Phonenumber
-
-#class PhonenumberData(BaseModel):
+# # Phonenumber
+#
+# class PhonenumberData(BaseModel):
 #    phonenumber: str
-
-#@app.post("/app/phonenumber")
-#def Phonenumber(data: PhonenumberData):
-
+#
+# @app.post("/app/phonenumber")
+# def Phonenumber(data: PhonenumberData):
+#
 #    return PhonenumberData()
-
-
-#Login
-
-#class LoginData(BaseModel):
+#
+#
+# # Login
+#
+# class LoginData(BaseModel):
 #    username: str
 #    password: str
 #    status: str
 #    token: str
 #    error_msg: str
-
-#@app.post("/app/login")
-#def Login(data: LoginData):
-
+#
+# @app.post("/app/login")
+# def Login(data: LoginData):
+#
 #    return LoginData()
-
-
-
-#Register
-
-#class RegisterData(BaseModel):
+#
+#
+#
+# # Register
+#
+# class RegisterData(BaseModel):
 #    status: str
-
-#@app.post("/app/register")
-#def Register(data: RegisterData):“
+#
+# @app.post("/app/register")
+# def Register(data: RegisterData):
+#     pass

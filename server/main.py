@@ -33,7 +33,10 @@ class Crutch(object):
         self.settings = settings
 
     def load_settings(self, settings: dict):
-        self.settings = CrutchSettings()
+        self.settings = CrutchSettings(**settings)
+
+    def dump_settings(self):
+        return self.settings.dict()
 
 g_crutch: List[Crutch] = []
 
