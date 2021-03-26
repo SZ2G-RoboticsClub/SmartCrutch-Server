@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from loguru import logger
 
-from .typing_ import *
-from .main import get_crutch
+from server.process import get_crutch_obj
+from server.typing_ import *
 
 app = FastAPI()
 
@@ -19,7 +19,7 @@ class HeatbeatData(BaseModel):
 def heatbeat(data: HeatbeatData):
     logger.debug(f"Recv heatbeat: {data}")
 
-    c = get_crutch(data.uuid)
+    c = get_crutch_obj(data.uuid)
     c.status, c.loc = data.status, data.loc
 
     return {'status': ServerStatus.ok}
@@ -88,3 +88,6 @@ def get_settings(uuid: str):
 # @app.post("/app/register")
 # def Register(data: RegisterData):
 #     pass
+#
+# @app.post("/app/update_settings")
+# def update_settings

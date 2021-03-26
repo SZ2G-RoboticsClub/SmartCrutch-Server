@@ -1,6 +1,6 @@
 from enum import Enum
 from pydantic import BaseModel
-from typing import Optional
+from typing import *
 
 class CrutchStatus(str, Enum):
     ok = 'ok'
