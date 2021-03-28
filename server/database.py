@@ -18,7 +18,7 @@ class DataBase(object):
         self.cursor = self.conn.cursor()
 
         if not is_init:
-            self.cursor.execute("CREATE TABLE settings (uuid CHARACTER(36), data json);")
+            self.cursor.execute("CREATE TABLE settings (uuid text, username text, data json);")
 
     def __del__(self):
         logger.info("Disconnecting database...")
@@ -26,22 +26,21 @@ class DataBase(object):
         self.conn.commit()
         self.conn.close()
 
-    def read(self, uuid: str):
-        self.cursor.execute(f"SELECT * FROM settings WHERE uuid='{uuid}';")
-        result = self.cursor.fetchall()
-        return result[0][1] if result else None
+    # def read(self, uuid: str):
+    #     self.cursor.execute(f"SELECT * FROM settings WHERE uuid='{uuid}';")
+    #     result = self.cursor.fetchall()
+    #     return result[0][1] if result else None
 
-    def write(self, uuid: str, data: dict):
-        if self.read(uuid):
-            self.cursor.execute(f"""UPDATE settings SET data = "{data}";""")
-        else:
-            self.cursor.execute(f"""INSERT INTO settings VALUES ('{uuid}', "{data}");""")
+    def create(self, uuid: str, username: str, data: str):
+        self.cursor.execute('INSERT INTO settings VALUES (?, ?, ?);', (uuid, username, data))
+        self.conn.commit()
+
+    def update(self, uuid: str, data: str):
+        self.cursor.execute('UPDATE settings SET data = ? WHERE uuid = ?;', (data, uuid))
         self.conn.commit()
 
     def read_all(self):
-        self.cursor.execute(f"SELECT * FROM settings;")
+        self.cursor.execute('SELECT * FROM settings;')
         return self.cursor.fetchall()
-
-db = DataBase()
 
 

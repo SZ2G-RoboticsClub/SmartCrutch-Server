@@ -1,6 +1,8 @@
 from enum import Enum
-from pydantic import BaseModel
 from typing import *
+
+from pydantic import BaseModel
+
 
 class CrutchStatus(str, Enum):
     ok = 'ok'
@@ -19,5 +21,4 @@ class Loc(BaseModel):
 class CrutchSettings(BaseModel):
     home_loc: Optional[Loc] = None
     phone: Optional[str] = None
-    account: Optional[str] = None
     password: Optional[str] = None

@@ -1,8 +1,11 @@
+from typing import Optional
+
 from fastapi import FastAPI
 from loguru import logger
+from pydantic import BaseModel
 
-from server.process import get_crutch_obj
-from server.typing_ import *
+from server.core import get_crutch_obj
+from server.typing_ import CrutchStatus, ServerStatus, CrutchSettings, Loc
 
 app = FastAPI()
 
