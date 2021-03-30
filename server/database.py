@@ -1,5 +1,6 @@
 import os
 import sqlite3
+from typing import Optional
 
 from loguru import logger
 
@@ -31,7 +32,7 @@ class DataBase(object):
     #     result = self.cursor.fetchall()
     #     return result[0][1] if result else None
 
-    def create(self, uuid: str, username: str, data: str):
+    def create(self, uuid: str, username: Optional[str], data: str):
         self.cursor.execute('INSERT INTO settings VALUES (?, ?, ?);', (uuid, username, data))
         self.conn.commit()
 

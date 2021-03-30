@@ -7,22 +7,20 @@ from server.database import DataBase
 from server.typing_ import CrutchStatus, Loc, CrutchSettings
 
 
-
 class Crutch(object):
-
     OFFLINE_TIME_THRESHOLD: float = 8.0
 
     def __eq__(self, other):
-        return self.uuid == other.uuid if self.uuid else self.account == other.uuid
+        return self.uuid == other.uuid if self.uuid else self.username == other.username
 
     def __init__(self, uuid: Optional[str] = None,
-                 account: Optional[str] = None,
+                 username: Optional[str] = None,
                  settings: Optional[str] = None):
 
         assert not (uuid or account), "Crutch instance must be initialized with uuid or account!"
 
         self.uuid = uuid
-        self.account = account
+        self.username = username
 
         self.status = CrutchStatus.offline
         self.loc: Optional[Loc] = None
@@ -47,7 +45,6 @@ class Crutch(object):
         db.update(self.uuid, settings.json())
 
 
-
 crutch_obj_list: List[Crutch]
 db: DataBase
 
@@ -58,22 +55,39 @@ def load_database():
     crutch_obj_list = [Crutch(uuid, account, settings) for uuid, account, settings in db.read_all()]
 
 
-def get_crutch_obj(uuid: Optional[str] = None, username: Optional[str] = None, ignore_not_found: bool = False):
-    assert not (uuid or username), "Crutch instance should be found with UUID or Username, got none of them"
-
+def get_crutch_uuid(username: str):
     try:
-        idx = crutch_obj_list.index(Crutch(uuid))
+        idx = crutch_obj_list.index(Crutch(username=username))
     except ValueError:
-        if not ignore_not_found:
-            logger.warning("Crutch data not found: " + f'UUID = {uuid}' if uuid else f'Username = {username}')
+        logger.warning(f"Crutch data not exist: Username='{username}'")
+        return None
+    return crutch_obj_list[idx].uuid
+
+
+def get_crutch_obj(uuid: str):
+    try:
+        idx = crutch_obj_list.index(Crutch(uuid=uuid))
+    except ValueError:
+        logger.warning(f"Crutch data not exist: UUID='{uuid}")
         return None
     return crutch_obj_list[idx]
 
 
-def register_crutch(uuid: str, username: str):
-    if not get_crutch_obj(uuid=uuid, ignore_not_found=True):
-        logger.warning("")
+def register_crutch(uuid: str) -> bool:
+    if get_crutch_obj(uuid):
+        logger.warning(f"Crutch (UUID='{uuid}) has already been registered.")
+        return False
 
-    if not get_crutch_obj(username=username, ignore_not_found=True):
-        logger.warning("")
-    logger.info(f"Crutch register: UUID = {uuid}, Username = {username}")
+    db.create(uuid, None, CrutchSettings().json())
+    crutch_obj_list.append(Crutch(uuid))
+
+    logger.info(f"Crutch registered: UUID = {uuid}")
+    return True
+
+
+def bind_crutch(crutch_obj: Crutch, username: str) -> bool:
+    if get_crutch_uuid(username):
+        logger.warning(f"Username '{username}' has already been occupied.")
+        return False
+    crutch_obj.username = username
+    return True
