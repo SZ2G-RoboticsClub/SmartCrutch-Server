@@ -13,90 +13,104 @@ app = FastAPI()
 
 # Heartbeat
 
-class HeatbeatData(BaseModel):
+class HeartbeatIn(BaseModel):
     uuid: str
     status: CrutchStatus
     loc: Optional[Loc]
 
-@app.post("/demoboard/heatbeat")
-def heatbeat(data: HeatbeatData):
-    logger.debug(f"Recv heatbeat: {data}")
+class HeartbeatOut(BaseModel):
+    code: int
+    msg: str
+
+@app.post("/demoboard/heartbeat", response_model=HeartbeatOut)
+def heartbeat(data: HeartbeatIn):
+    logger.debug(f"Recv heartbeat: {data}")
 
     c = get_crutch_obj(data.uuid)
 
     # TODO: Handle crutch-not-registered exceptation
 
+    if not c:
+        return HeartbeatOut(code=1, msg='crutch has not been registered')
+
     c.status, c.loc = data.status, data.loc
 
-    return {'status': ServerStatus.ok}
+    return HeartbeatOut(code=0, msg='success')
+
+
 
 
 # Emergency
 
-class EmergencyData(BaseModel):
+class EmergencyIn(BaseModel):
     uuid: str
     loc: Optional[Loc]
 
-@app.post("/demoboard/emergency")
-def emergency(data: EmergencyData):
+class EmergencyOut(BaseModel):
+    code: int
+    msg: str
+
+@app.post("/demoboard/emergency", response_model=EmergencyOut)
+def emergency(data: EmergencyIn):
 
     logger.debug(f"Recv emergency: {data}")
-    return {'status': ServerStatus.ok}
+    return EmergencyOut(code=0, msg='success')
+
+
+
 
 
 # GetSettings
 
-class SettingsData(BaseModel):
-    status: ServerStatus
+class GetsettingsOut(BaseModel):
+    code: int
+    msg: str
     settings: CrutchSettings
 
-@app.get("/demoboard/get_settings/{uuid}")
+@app.get("/demoboard/get_settings/{uuid}", response_model=GetsettingsOut)
 def get_settings(uuid: str):
     logger.debug(f"Recv get settings req from {uuid}")
     c = get_crutch_obj(uuid)
     if not c:
         c = register_crutch(uuid)
-    return c.settings
+    return GetsettingsOut(code=0, msg='success', settings=c.settings)
 
 
 
 # ============ Android app ============
 
-# # Phonenumber
-#
-# class PhonenumberData(BaseModel):
-#    phonenumber: str
-#
-# @app.post("/app/phonenumber")
-# def Phonenumber(data: PhonenumberData):
-#
-#    return PhonenumberData()
-#
-#
-# # Login
-#
-# class LoginData(BaseModel):
-#    username: str
-#    password: str
-#    status: str
-#    token: str
-#    error_msg: str
-#
-# @app.post("/app/login")
-# def Login(data: LoginData):
-#
-#    return LoginData()
-#
-#
-#
-# # Register
-#
-# class RegisterData(BaseModel):
-#    status: str
-#
-# @app.post("/app/register")
-# def Register(data: RegisterData):
-#     pass
-#
-# @app.post("/app/update_settings")
-# def update_settings
+
+
+# Bind
+
+class BindOut(BaseModel):
+    code: int
+    msg: str
+
+class BindIn(BaseModel):
+    uuid: str
+    username: str
+    password: str
+
+@app.post("/app/bind", response_model=BindOut)
+def bind(data: BindIn):
+    logger.debug(f"Recv register req: {data}")
+
+    c = get_crutch_obj(data.uuid)
+    if not c:
+        logger.warning(f"Req trying to bind a unregistered crutch: {data.uuid}")
+        return BindOut(code=1, msg='crutch has not been registered')
+
+    if c.username:
+        logger.warning(f"Req trying to bind a binded crutch: {data}")
+        return BindOut(code=2, msg='crutch has been binded')
+
+    if get_crutch_uuid(data.username):
+        logger.warning(f"Req trying to bind a crutch to a occupied username: {data.username}")
+        return BindOut(code=3, msg='username occupied')
+
+    c.update_settings(CrutchSettings(password=data.password))
+    c.username = data.username
+
+    logger.info(f"Crutch binded: {data}")
+    return BindOut(code=0, msg='success')

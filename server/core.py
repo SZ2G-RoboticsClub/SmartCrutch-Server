@@ -41,7 +41,7 @@ class Crutch(object):
         return self.status
 
     def update_settings(self, settings: CrutchSettings):
-        self.settings = settings
+        self.settings = settings.copy(update=settings.dict())
         db.update(self.uuid, settings.json())
 
 
@@ -75,7 +75,7 @@ def get_crutch_obj(uuid: str):
 
 def register_crutch(uuid: str) -> Optional[Crutch]:
     """
-    Register a crutch to database.
+    Register a crutch in database.
     :param uuid: crutch UUID
     :return: crutch obj if succeeded, otherwise return None
     """
@@ -89,10 +89,16 @@ def register_crutch(uuid: str) -> Optional[Crutch]:
     logger.info(f"Crutch registered: UUID = {uuid}")
     return crutch_obj_list[-1]
 
-
-def bind_crutch(crutch_obj: Crutch, username: str) -> bool:
-    if get_crutch_uuid(username):
-        logger.warning(f"Username '{username}' has already been occupied.")
-        return False
-    crutch_obj.username = username
-    return True
+#
+# def bind_crutch(crutch_obj: Crutch, username: str) -> bool:
+#     """
+#     Bind a crutch uuid with username.
+#     :param crutch_obj: cructh obj
+#     :param username: username to be binded
+#     :return: success or not
+#     """
+#     if get_crutch_uuid(username):
+#         logger.warning(f"Username '{username}' has already been occupied.")
+#         return False
+#     crutch_obj.username = username
+#     return True
