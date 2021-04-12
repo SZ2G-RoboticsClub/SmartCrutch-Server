@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from loguru import logger
 from pydantic import BaseModel
 
-from server.core import get_crutch_obj
+from server.core import get_crutch_obj, register_crutch, get_crutch_uuid
 from server.typing_ import CrutchStatus, ServerStatus, CrutchSettings, Loc
 
 app = FastAPI()
@@ -23,6 +23,9 @@ def heatbeat(data: HeatbeatData):
     logger.debug(f"Recv heatbeat: {data}")
 
     c = get_crutch_obj(data.uuid)
+
+    # TODO: Handle crutch-not-registered exceptation
+
     c.status, c.loc = data.status, data.loc
 
     return {'status': ServerStatus.ok}
@@ -50,7 +53,10 @@ class SettingsData(BaseModel):
 @app.get("/demoboard/get_settings/{uuid}")
 def get_settings(uuid: str):
     logger.debug(f"Recv get settings req from {uuid}")
-    return SettingsData(status=ServerStatus.ok, phone='12345678', home_addr=Loc())
+    c = get_crutch_obj(uuid)
+    if not c:
+        c = register_crutch(uuid)
+    return c.settings
 
 
 

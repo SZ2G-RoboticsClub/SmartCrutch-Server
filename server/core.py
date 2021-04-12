@@ -17,7 +17,7 @@ class Crutch(object):
                  username: Optional[str] = None,
                  settings: Optional[str] = None):
 
-        assert not (uuid or account), "Crutch instance must be initialized with uuid or account!"
+        assert uuid or username, "Crutch instance must be initialized with uuid or account!"
 
         self.uuid = uuid
         self.username = username
@@ -68,21 +68,26 @@ def get_crutch_obj(uuid: str):
     try:
         idx = crutch_obj_list.index(Crutch(uuid=uuid))
     except ValueError:
-        logger.warning(f"Crutch data not exist: UUID='{uuid}")
+        logger.warning(f"Crutch data not exist: UUID='{uuid}'")
         return None
     return crutch_obj_list[idx]
 
 
-def register_crutch(uuid: str) -> bool:
+def register_crutch(uuid: str) -> Optional[Crutch]:
+    """
+    Register a crutch to database.
+    :param uuid: crutch UUID
+    :return: crutch obj if succeeded, otherwise return None
+    """
     if get_crutch_obj(uuid):
         logger.warning(f"Crutch (UUID='{uuid}) has already been registered.")
-        return False
+        return None
 
     db.create(uuid, None, CrutchSettings().json())
     crutch_obj_list.append(Crutch(uuid))
 
     logger.info(f"Crutch registered: UUID = {uuid}")
-    return True
+    return crutch_obj_list[-1]
 
 
 def bind_crutch(crutch_obj: Crutch, username: str) -> bool:

@@ -15,7 +15,7 @@ class DataBase(object):
         else:
             is_init = False
 
-        self.conn = sqlite3.connect(get_relative_path('../data/data.db'))
+        self.conn = sqlite3.connect(get_relative_path('../data/data.db'), check_same_thread=False)
         self.cursor = self.conn.cursor()
 
         if not is_init:
@@ -33,6 +33,7 @@ class DataBase(object):
     #     return result[0][1] if result else None
 
     def create(self, uuid: str, username: Optional[str], data: str):
+        logger.debug("Called create func")
         self.cursor.execute('INSERT INTO settings VALUES (?, ?, ?);', (uuid, username, data))
         self.conn.commit()
 
