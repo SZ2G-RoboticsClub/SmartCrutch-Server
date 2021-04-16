@@ -2,7 +2,7 @@ from typing import Optional
 
 from fastapi import FastAPI
 from loguru import logger
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 
 from server.core import get_crutch_obj, register_crutch, get_crutch_uuid
 from server.typing_ import CrutchStatus, CrutchSettings, Loc
@@ -43,21 +43,21 @@ def heartbeat(data: HeartbeatIn):
 
 
 
-# Emergency
-
-class EmergencyIn(BaseModel):
-    uuid: str
-    loc: Optional[Loc]
-
-class EmergencyOut(BaseModel):
-    code: int
-    msg: str
-
-@app.post("/demoboard/emergency", response_model=EmergencyOut)
-def emergency(data: EmergencyIn):
-
-    logger.debug(f"Recv emergency: {data}")
-    return EmergencyOut(code=0, msg='success')
+# # Emergency
+#
+# class EmergencyIn(BaseModel):
+#     uuid: str
+#     loc: Optional[Loc]
+#
+# class EmergencyOut(BaseModel):
+#     code: int
+#     msg: str
+#
+# @app.post("/demoboard/emergency", response_model=EmergencyOut)
+# def emergency(data: EmergencyIn):
+#
+#     logger.debug(f"Recv emergency: {data}")
+#     return EmergencyOut(code=0, msg='success')
 
 
 
@@ -110,7 +110,11 @@ def bind(data: BindIn):
         logger.warning(f"Req trying to bind a crutch to a occupied username: {data.username}")
         return BindOut(code=3, msg='username occupied')
 
-    c.update_settings(CrutchSettings(password=data.password))
+    if not data.password:
+        logger.warning("Req trying to bind crutch without password")
+        return BindOut(code=4, msg='password should not be empty')
+
+    c.settings = CrutchSettings(password=data.password)
     c.username = data.username
 
     logger.info(f"Crutch binded: {data}")
@@ -159,19 +163,39 @@ class UpdatesettingsOut(BaseModel):
     msg: str
 
 @app.post("/app/update_settings", response_model=UpdatesettingsOut)
-def login(data: UpdatesettingsIn):
+def update_settings(data: UpdatesettingsIn):
     logger.debug(f"Recv update settings req: {data}")
 
     c = get_crutch_obj(data.uuid)
     if not c:
         logger.warning(f"Got invalid uuid: {data.uuid}")
-        return UpdatesettingsOut(code=1, msg='crutch has not been registered')
+        return UpdatesettingsOut(code=1, msg='invalid uuid')
 
-    try:
-        c.update_settings(CrutchSettings)
-    except ValidationError:
-        logger.warning(f"Got invalid settings: {data.settings}")
-        return UpdatesettingsOut(code=1, msg='crutch has not been registered')
+    if not data.settings.password:
+        logger.warning(f"Got empty password: {data}")
+        return UpdatesettingsOut(code=2, msg='password should not be empty')
+
+    c.settings = data.settings
 
     logger.info(f"Settings updated: uuid={data.uuid}, settings={data.settings}")
     return UpdatesettingsOut(code=0, msg='success')
+
+
+
+# AppGetSettings
+
+class AppGetsettingsOut(BaseModel):
+    code: int
+    msg: str
+    settings: Optional[CrutchSettings]
+
+@app.get("/app/get_settings/{uuid}", response_model=AppGetsettingsOut)
+def app_get_settings(uuid: str):
+    logger.debug(f"Recv get settings req from app: uuid={uuid}")
+    c = get_crutch_obj(uuid)
+
+    if not c:
+        logger.warning(f"Got invalid uuid: {uuid}")
+        return AppGetsettingsOut(code=1, msg='invalid uuid')
+
+    return AppGetsettingsOut(code=0, msg='success', settings=c.settings)

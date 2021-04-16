@@ -32,13 +32,16 @@ class DataBase(object):
     #     result = self.cursor.fetchall()
     #     return result[0][1] if result else None
 
-    def create(self, uuid: str, username: Optional[str], data: str):
-        logger.debug("Called create func")
-        self.cursor.execute('INSERT INTO settings VALUES (?, ?, ?);', (uuid, username, data))
+    def create(self, uuid: str):
+        self.cursor.execute('INSERT INTO settings VALUES (?, ?, ?);', (uuid, None, None))
         self.conn.commit()
 
-    def update(self, uuid: str, data: str):
+    def update_settings(self, uuid: str, data: str):
         self.cursor.execute('UPDATE settings SET data = ? WHERE uuid = ?;', (data, uuid))
+        self.conn.commit()
+
+    def update_username(self, uuid: str, username: str):
+        self.cursor.execute('UPDATE settings SET username = ? WHERE uuid = ?;', (username, uuid))
         self.conn.commit()
 
     def read_all(self):

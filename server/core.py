@@ -11,7 +11,7 @@ class Crutch(object):
     OFFLINE_TIME_THRESHOLD: float = 8.0
 
     def __eq__(self, other):
-        return self.uuid == other.uuid if self.uuid else self.username == other.username
+        return self.uuid == other.uuid or (self.username and self.username == other.username)
 
     def __init__(self, uuid: Optional[str] = None,
                  username: Optional[str] = None,
@@ -20,16 +20,16 @@ class Crutch(object):
         assert uuid or username, "Crutch instance must be initialized with uuid or account!"
 
         self.uuid = uuid
-        self.username = username
+        self._username = username
 
         self.status = CrutchStatus.offline
         self.loc: Optional[Loc] = None
         self.last_conn_time = 0
 
-        self.settings = CrutchSettings()
+        self._settings = CrutchSettings()
 
         if settings:
-            self.settings = CrutchSettings.parse_raw(settings)
+            self._settings = CrutchSettings.parse_raw(settings)
 
     def update_status(self, status: CrutchStatus):
         self.last_conn_time = time()
@@ -40,10 +40,23 @@ class Crutch(object):
             return CrutchStatus.offline
         return self.status
 
-    def update_settings(self, settings: CrutchSettings):
-        self.settings = settings.copy(update=settings.dict())
-        db.update(self.uuid, settings.json())
+    @property
+    def settings(self) -> CrutchSettings:
+        return self._settings
 
+    @settings.setter
+    def settings(self, settings):
+        self._settings = settings
+        db.update_settings(self.uuid, self.settings.json())
+
+    @property
+    def username(self) -> str:
+        return self._username
+
+    @username.setter
+    def username(self, username):
+        self._username = username
+        db.update_username(self.uuid, self.username)
 
 crutch_obj_list: List[Crutch]
 db: DataBase
@@ -52,23 +65,23 @@ db: DataBase
 def load_database():
     global crutch_obj_list, db
     db = DataBase()
-    crutch_obj_list = [Crutch(uuid, account, settings) for uuid, account, settings in db.read_all()]
+    crutch_obj_list = [Crutch(uuid, username, settings) for uuid, username, settings in db.read_all()]
 
 
-def get_crutch_uuid(username: str):
+def get_crutch_uuid(username: str) -> Optional[str]:
     try:
         idx = crutch_obj_list.index(Crutch(username=username))
     except ValueError:
-        logger.warning(f"Crutch data not exist: Username='{username}'")
+        logger.debug(f"Crutch data not exist: Username='{username}'")
         return None
     return crutch_obj_list[idx].uuid
 
 
-def get_crutch_obj(uuid: str):
+def get_crutch_obj(uuid: str) -> Optional[Crutch]:
     try:
         idx = crutch_obj_list.index(Crutch(uuid=uuid))
     except ValueError:
-        logger.warning(f"Crutch data not exist: UUID='{uuid}'")
+        logger.debug(f"Crutch data not exist: UUID='{uuid}'")
         return None
     return crutch_obj_list[idx]
 
@@ -83,22 +96,8 @@ def register_crutch(uuid: str) -> Optional[Crutch]:
         logger.warning(f"Crutch (UUID='{uuid}) has already been registered.")
         return None
 
-    db.create(uuid, None, CrutchSettings().json())
+    db.create(uuid)
     crutch_obj_list.append(Crutch(uuid))
 
     logger.info(f"Crutch registered: UUID = {uuid}")
     return crutch_obj_list[-1]
-
-#
-# def bind_crutch(crutch_obj: Crutch, username: str) -> bool:
-#     """
-#     Bind a crutch uuid with username.
-#     :param crutch_obj: cructh obj
-#     :param username: username to be binded
-#     :return: success or not
-#     """
-#     if get_crutch_uuid(username):
-#         logger.warning(f"Username '{username}' has already been occupied.")
-#         return False
-#     crutch_obj.username = username
-#     return True

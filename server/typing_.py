@@ -18,8 +18,3 @@ class CrutchSettings(BaseModel):
     home_loc: Optional[Loc] = None
     phone: Optional[str] = None
     password: Optional[str] = None
-
-    @validator('password')
-    def _(cls, v):
-        assert v, "password must not be empty"
-        return v
