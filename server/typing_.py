@@ -15,6 +15,11 @@ class Loc(BaseModel):
     longitude: float
 
 class CrutchSettings(BaseModel):
+    """
+    Crutch setting data model
+    - home_loc: Optional, home location
+    - phone:
+    """
     home_loc: Optional[Loc] = None
     phone: Optional[str] = None
     password: Optional[str] = None

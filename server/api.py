@@ -28,6 +28,28 @@ class HeartbeatOut(BaseModel):
 
 @app.post("/demoboard/heartbeat", response_model=HeartbeatOut)
 def heartbeat(data: HeartbeatIn):
+    """
+    ### Description
+    拐杖心跳包，每隔**5秒**发送一次
+
+    ### Request
+    - uuid: 拐杖uuid
+    - status: 拐杖状态码:
+        - 'ok': 正常
+        - 'emergency': 摔倒
+        - 'error': 错误
+        - ~~ 'offline': 离线，**内部使用，不可通过Api设置** ~~
+    - loc: *可选项*，位置经纬度数据
+        - latitude: 经度
+        - longitude: 纬度
+
+    ### Response
+    - code: 返回值:
+        - 0: 成功
+        - 1: 拐杖未注册
+    - msg: 返回值信息
+    """
+
     logger.debug(f"Recv heartbeat: {data}")
 
     c = get_crutch_obj(data.uuid)
@@ -70,6 +92,26 @@ class GetsettingsOut(BaseModel):
 
 @app.get("/demoboard/get_settings/{uuid}", response_model=GetsettingsOut)
 def get_settings(uuid: str):
+    """
+    ### Description
+    获取拐杖设置信息
+    在拐杖启动时请求，若uuid不存在则自动注册
+
+    ### Request
+    - uuid: 拐杖uuid
+
+    ### Response
+    - code: 返回值:
+        - 0: 成功
+    - msg: 返回值信息
+    - settings: 设置信息
+        - home_loc: *可选项*，家庭地址
+            - latitude: 经度
+            - longitude: 纬度
+        - phone: *可选项*，电话号码
+        - password: *可选项*，App登录密码
+    """
+
     logger.debug(f"Recv get settings req from {uuid}")
     c = get_crutch_obj(uuid)
     if not c:
