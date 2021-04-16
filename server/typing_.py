@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import *
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 
 class CrutchStatus(str, Enum):
@@ -9,10 +9,6 @@ class CrutchStatus(str, Enum):
     emergency = 'emergency'
     error = 'error'
     offline = 'offline'
-
-class ServerStatus(str, Enum):
-    ok = 'ok'
-    error = 'error'
 
 class Loc(BaseModel):
     latitude: float
@@ -22,3 +18,8 @@ class CrutchSettings(BaseModel):
     home_loc: Optional[Loc] = None
     phone: Optional[str] = None
     password: Optional[str] = None
+
+    @validator('password')
+    def _(cls, v):
+        assert v, "password must not be empty"
+        return v
