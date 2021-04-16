@@ -29,10 +29,10 @@ class HeartbeatOut(BaseModel):
 @app.post("/demoboard/heartbeat", response_model=HeartbeatOut)
 def heartbeat(data: HeartbeatIn):
     """
-    ### Description
+    #### Description
     拐杖心跳包，每隔**5秒**发送一次
 
-    ### Request
+    #### Request
     - uuid: 拐杖uuid
     - status: 拐杖状态码:
         - 'ok': 正常
@@ -43,7 +43,7 @@ def heartbeat(data: HeartbeatIn):
         - latitude: 经度
         - longitude: 纬度
 
-    ### Response
+    #### Response
     - code: 返回值:
         - 0: 成功
         - 1: 拐杖未注册
@@ -93,21 +93,18 @@ class GetsettingsOut(BaseModel):
 @app.get("/demoboard/get_settings/{uuid}", response_model=GetsettingsOut)
 def get_settings(uuid: str):
     """
-    ### Description
+    #### Description
     获取拐杖设置信息
     在拐杖启动时请求，若uuid不存在则自动注册
 
-    ### Request
+    #### Request
     - uuid: 拐杖uuid
 
-    ### Response
+    #### Response
     - code: 返回值:
         - 0: 成功
     - msg: 返回值信息
     - settings: 设置信息
-        - home_loc: *可选项*，家庭地址
-            - latitude: 经度
-            - longitude: 纬度
         - phone: *可选项*，电话号码
         - password: *可选项*，App登录密码
     """
@@ -137,6 +134,26 @@ class BindOut(BaseModel):
 
 @app.post("/app/bind", response_model=BindOut)
 def bind(data: BindIn):
+    """
+    #### Description
+    绑定拐杖到App账号，App注册时调用
+
+    #### Request
+    - uuid: 拐杖uuid
+    - username: 用户名，不可为空
+    - password: 密码，不可为空
+
+    #### Response
+    - code: 返回值:
+        - 0: 成功
+        - 1: 拐杖uuid未注册
+        - 2: 拐杖uuid已绑定账号
+        - 3: 密码不可为空
+        - 4: 用户名不可为空
+        - 5: 用户名已使用
+    - msg: 返回值信息
+    """
+
     logger.debug(f"Recv register req: {data}")
 
     c = get_crutch_obj(data.uuid)
@@ -148,13 +165,18 @@ def bind(data: BindIn):
         logger.warning(f"Req trying to bind a binded crutch: {data}")
         return BindOut(code=2, msg='crutch has been binded')
 
+    if not data.password:
+        logger.warning(f"Req trying to bind crutch without password: {data}")
+        return BindOut(code=3, msg='password should not be empty')
+
+    if not data.username:
+        logger.warning(f"Req trying to bind crutch without username: {data}")
+        return BindOut(code=4, msg='username should not be empty')
+
     if get_crutch_uuid(data.username):
         logger.warning(f"Req trying to bind a crutch to a occupied username: {data.username}")
-        return BindOut(code=3, msg='username occupied')
+        return BindOut(code=5, msg='username occupied')
 
-    if not data.password:
-        logger.warning("Req trying to bind crutch without password")
-        return BindOut(code=4, msg='password should not be empty')
 
     c.settings = CrutchSettings(password=data.password)
     c.username = data.username
@@ -177,6 +199,22 @@ class LoginOut(BaseModel):
 
 @app.post("/app/login", response_model=LoginOut)
 def login(data: LoginIn):
+    """
+    #### Description
+    获取拐杖uuid，App登录时调用
+
+    #### Request
+    - username: 用户名，不可为空
+    - password: 密码，不可为空
+
+    #### Response
+    - code: 返回值:
+        - 0: 成功
+        - 1: 用户名不存在
+        - 2: 密码错误
+    - msg: 返回值信息
+    """
+
     logger.debug(f"Recv login req: {data}")
 
     uuid = get_crutch_uuid(data.username)
@@ -206,6 +244,24 @@ class UpdatesettingsOut(BaseModel):
 
 @app.post("/app/update_settings", response_model=UpdatesettingsOut)
 def update_settings(data: UpdatesettingsIn):
+    """
+    #### Description
+    绑定拐杖到App账号，App注册时调用
+
+    #### Request
+    - uuid: 拐杖uuid
+    - settings: 拐杖设置信息
+        - phone: *可选项*，电话号码
+        - password: App登录密码，不可为空
+
+    #### Response
+    - code: 返回值:
+        - 0: 成功
+        - 1: 无效的uuid
+        - 2: 密码不可为空
+    - msg: 返回值信息
+    """
+
     logger.debug(f"Recv update settings req: {data}")
 
     c = get_crutch_obj(data.uuid)
@@ -233,6 +289,22 @@ class AppGetsettingsOut(BaseModel):
 
 @app.get("/app/get_settings/{uuid}", response_model=AppGetsettingsOut)
 def app_get_settings(uuid: str):
+    """
+    #### Description
+    获取拐杖设置信息，类似 `demoboard/get_settings`，但uuid不存在不会自动注册
+
+    #### Request
+    - uuid: 拐杖uuid
+
+    #### Response
+    - code: 返回值:
+        - 0: 成功
+        - 1: 无效的uuid
+    - msg: 返回值信息
+    - settings: 设置信息
+        - phone: *可选项*，电话号码
+        - password: App登录密码
+    """
     logger.debug(f"Recv get settings req from app: uuid={uuid}")
     c = get_crutch_obj(uuid)
 

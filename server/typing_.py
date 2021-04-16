@@ -1,14 +1,15 @@
 from enum import Enum
 from typing import *
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
 
 class CrutchStatus(str, Enum):
-    ok = 'ok'
-    emergency = 'emergency'
-    error = 'error'
-    offline = 'offline'
+    ok = 'ok' # ok
+    emergency = 'emergency' # fallen down
+    error = 'error' # demoboard internal error
+    offline = 'offline' # offline
+    charging = 'charging' # battery charging
 
 class Loc(BaseModel):
     latitude: float
@@ -16,10 +17,12 @@ class Loc(BaseModel):
 
 class CrutchSettings(BaseModel):
     """
-    Crutch setting data model
-    - home_loc: Optional, home location
+    - home_loc: *可选项*，家庭地址
+        - latitude: 经度
+        - longitude: 纬度
     - phone:
+    - password:
     """
-    home_loc: Optional[Loc] = None
+    # home_loc: Optional[Loc] = None
     phone: Optional[str] = None
     password: Optional[str] = None
