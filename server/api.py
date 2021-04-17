@@ -1,13 +1,27 @@
 from typing import Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from loguru import logger
 from pydantic import BaseModel
 
 from server.core import get_crutch_obj, register_crutch, get_crutch_uuid
 from server.typing_ import CrutchStatus, CrutchSettings, Loc
 
-app = FastAPI()
+app = FastAPI(
+    title="SmartCrutch API Docs",
+    description="守护者云拐杖(SmartCrutch-v4)API文档",
+    version="0.2b"
+)
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content=jsonable_encoder({"code": 100, "msg": str(exc)})
+    )
 
 
 
@@ -38,10 +52,7 @@ def heartbeat(data: HeartbeatIn):
         - 'ok': 正常
         - 'emergency': 摔倒
         - 'error': 错误
-        - ~~ 'offline': 离线，**内部使用，不可通过Api设置** ~~
-    - loc: *可选项*，位置经纬度数据
-        - latitude: 经度
-        - longitude: 纬度
+        - 'offline': 离线，**内部使用，不可通过Api设置**
 
     #### Response
     - code: 返回值:
