@@ -2,5 +2,4 @@ fastapi
 loguru
 pydantic
 uvicorn
-starlette
 requests
