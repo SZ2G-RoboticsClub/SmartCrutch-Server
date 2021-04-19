@@ -324,3 +324,40 @@ def app_get_settings(uuid: str):
         return AppGetsettingsOut(code=1, msg='invalid uuid')
 
     return AppGetsettingsOut(code=0, msg='success', settings=c.settings)
+
+
+
+# Get status
+
+class GetStatusOut(BaseModel):
+    code: int
+    msg: str
+    status: CrutchStatus
+
+@app.get("/app/get_status/{uuid}", response_model=GetStatusOut)
+def get_status(uuid: str):
+    """
+    #### Description
+    获取拐杖状态信息
+
+    #### Request
+    - uuid: 拐杖uuid
+
+    #### Response
+    - code: 返回值:
+        - 0: 成功
+        - 1: 无效的uuid
+    - msg: 返回值信息
+    - status: 拐杖状态码:
+        - 'ok': 正常
+        - 'emergency': 摔倒
+        - 'error': 错误
+        - 'offline': 离线
+    """
+
+    c = get_crutch_obj(uuid)
+
+    if not c:
+        logger.warning(f"Got invalid uuid: {uuid}")
+        return UpdatesettingsOut(code=1, msg='invalid uuid')
+    return GetStatusOut(code=0, msg='success', status=c.status)

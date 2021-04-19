@@ -22,23 +22,15 @@ class Crutch(object):
         self.uuid = uuid
         self._username = username
 
-        self.status = CrutchStatus.offline
+        self._status = CrutchStatus.offline
+        self._last_conn_time = 0
+
         self.loc: Optional[Loc] = None
-        self.last_conn_time = 0
 
         self._settings = CrutchSettings()
 
         if settings:
             self._settings = CrutchSettings.parse_raw(settings)
-
-    def update_status(self, status: CrutchStatus):
-        self.last_conn_time = time()
-        self.status = status
-
-    def get_status(self) -> CrutchStatus:
-        if self.status == CrutchStatus.ok and time() - self.last_conn_time > self.OFFLINE_TIME_THRESHOLD:
-            return CrutchStatus.offline
-        return self.status
 
     @property
     def settings(self) -> CrutchSettings:
@@ -57,6 +49,18 @@ class Crutch(object):
     def username(self, username):
         self._username = username
         db.update_username(self.uuid, self.username)
+
+    @property
+    def status(self) -> CrutchStatus:
+        if self._status == CrutchStatus.ok and time() - self._last_conn_time > self.OFFLINE_TIME_THRESHOLD:
+            return CrutchStatus.offline
+        return self._status
+
+    @status.setter
+    def status(self, status: CrutchStatus):
+        self._last_conn_time = time()
+        self._status = status
+
 
 crutch_obj_list: List[Crutch]
 db: DataBase
