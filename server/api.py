@@ -53,6 +53,9 @@ def heartbeat(data: HeartbeatIn):
         - 'emergency': 摔倒
         - 'error': 错误
         - 'offline': 离线，**内部使用，不可通过Api设置**
+    - loc: *可选项*，拐杖位置信息
+        - latitude: 经度
+        - longitude: 纬度
 
     #### Response
     - code: 返回值:
@@ -333,6 +336,7 @@ class GetStatusOut(BaseModel):
     code: int
     msg: str
     status: CrutchStatus
+    loc: Optional[Loc]
 
 @app.get("/app/get_status/{uuid}", response_model=GetStatusOut)
 def get_status(uuid: str):
@@ -353,6 +357,9 @@ def get_status(uuid: str):
         - 'emergency': 摔倒
         - 'error': 错误
         - 'offline': 离线
+    - loc: *可选项*，拐杖位置信息
+        - latitude: 经度
+        - longitude: 纬度
     """
 
     c = get_crutch_obj(uuid)
@@ -360,4 +367,4 @@ def get_status(uuid: str):
     if not c:
         logger.warning(f"Got invalid uuid: {uuid}")
         return UpdatesettingsOut(code=1, msg='invalid uuid')
-    return GetStatusOut(code=0, msg='success', status=c.status)
+    return GetStatusOut(code=0, msg='success', status=c.status, loc=c.loc)
