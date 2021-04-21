@@ -227,6 +227,7 @@ def login(data: LoginIn):
         - 1: 用户名不存在
         - 2: 密码错误
     - msg: 返回值信息
+    - uuid: 拐杖uuid
     """
 
     logger.debug(f"Recv login req: {data}")
