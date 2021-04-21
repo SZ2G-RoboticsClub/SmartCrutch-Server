@@ -18,8 +18,8 @@ class Loc(BaseModel):
 class CrutchSettings(BaseModel):
     """
     - home_loc: *可选项*，家庭地址
-        - latitude: 经度
-        - longitude: 纬度
+        - latitude: 纬度
+        - longitude: 经度
     - phone:
     - password:
     """

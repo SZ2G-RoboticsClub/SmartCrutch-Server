@@ -54,8 +54,8 @@ def heartbeat(data: HeartbeatIn):
         - 'error': 错误
         - 'offline': 离线，**内部使用，不可通过Api设置**
     - loc: *可选项*，拐杖位置信息
-        - latitude: 经度
-        - longitude: 纬度
+        - latitude: 纬度
+        - longitude: 经度
 
     #### Response
     - code: 返回值:
@@ -358,8 +358,8 @@ def get_status(uuid: str):
         - 'error': 错误
         - 'offline': 离线
     - loc: *可选项*，拐杖位置信息
-        - latitude: 经度
-        - longitude: 纬度
+        - latitude: 纬度
+        - longitude: 经度
     """
 
     c = get_crutch_obj(uuid)

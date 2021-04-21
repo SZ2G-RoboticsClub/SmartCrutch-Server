@@ -3,7 +3,7 @@
 SmartCrutch-v4 Server Repo
 
 ## Demoboard Api
-掌控版Api
+掌控板Api
 
 ### Heartbeat
 
@@ -21,8 +21,8 @@ SmartCrutch-v4 Server Repo
     - 'error': 错误
     - 'offline': 离线，**内部使用，不可通过Api设置**
 - loc: *可选项*，位置经纬度数据
-    - latitude: 经度
-    - longitude: 纬度
+    - latitude: 纬度
+    - longitude: 经度
 
 #### Response
 - code: 返回值:
@@ -102,7 +102,7 @@ Android App Api
 - method: `post`
 
 #### Description
-绑定拐杖到App账号，App注册时调用
+设置信息，保存设置时调用
 
 #### Request
 - uuid: 拐杖uuid
@@ -136,3 +136,28 @@ Android App Api
 - settings: 设置信息
     - phone: *可选项*，电话号码
     - password: App登录密码
+
+### Get Status
+
+- url: `/app/get_status/{uuid}`
+- method: `get`
+
+#### Description
+获取拐杖状态信息
+
+#### Request
+- uuid: 拐杖uuid
+
+#### Response
+- code: 返回值:
+    - 0: 成功
+    - 1: 无效的uuid
+- msg: 返回值信息
+- status: 拐杖状态码
+    - 'ok': 正常
+    - 'emergency': 摔倒
+    - 'error': 错误
+    - 'offline': 离线
+- loc: 拐杖位置信息
+    - latitude: 纬度
+    - longitude: 经度
