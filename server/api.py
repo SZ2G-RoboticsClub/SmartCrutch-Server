@@ -35,7 +35,6 @@ class HeartbeatIn(BaseModel):
     uuid: str
     status: CrutchStatus
     loc: Optional[Loc]
-    img: str
 
 class HeartbeatOut(BaseModel):
     code: int
@@ -57,7 +56,6 @@ def heartbeat(data: HeartbeatIn):
     - loc: *可选项*，拐杖位置信息
         - latitude: 纬度
         - longitude: 经度
-    - img: 图像信息，*str格式*
 
     #### Response
     - code: 返回值:
@@ -341,7 +339,6 @@ class GetStatusOut(BaseModel):
     msg: str
     status: CrutchStatus
     loc: Optional[Loc]
-    img: str
 
 @app.get("/app/get_status/{uuid}", response_model=GetStatusOut)
 def get_status(uuid: str):
@@ -365,7 +362,6 @@ def get_status(uuid: str):
     - loc: *可选项*，拐杖位置信息
         - latitude: 纬度
         - longitude: 经度
-    - img: 图像信息，*str格式*
     """
 
     c = get_crutch_obj(uuid)
