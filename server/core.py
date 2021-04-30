@@ -4,7 +4,7 @@ from typing import Optional, List
 from loguru import logger
 
 from server.database import DataBase
-from server.typing_ import CrutchStatus, Loc, CrutchSettings
+from server.typing_ import CrutchStatus, Loc, CrutchSettings, CrutchImage
 
 
 class Crutch(object):
@@ -28,6 +28,8 @@ class Crutch(object):
         self.loc: Optional[Loc] = None
 
         self._settings = CrutchSettings()
+
+        self._image = CrutchImage.offline
 
         if settings:
             self._settings = CrutchSettings.parse_raw(settings)
@@ -80,7 +82,7 @@ db: DataBase
 def load_database():
     global crutch_obj_list, db
     db = DataBase()
-    crutch_obj_list = [Crutch(uuid, username, settings) for uuid, username, settings in db.read_all()]
+    crutch_obj_list = [Crutch(uuid, username, settings, image) for uuid, username, settings, image in db.read_all()]
 
 
 def get_crutch_uuid(username: str) -> Optional[str]:
