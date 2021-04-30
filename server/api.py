@@ -8,7 +8,7 @@ from loguru import logger
 from pydantic import BaseModel
 
 from server.core import get_crutch_obj, register_crutch, get_crutch_uuid
-from server.typing_ import CrutchStatus, CrutchSettings, Loc
+from server.typing_ import CrutchStatus, CrutchSettings, Loc, CrutchImg
 
 app = FastAPI(
     title="SmartCrutch API Docs",
@@ -130,6 +130,49 @@ def get_settings(uuid: str):
         c = register_crutch(uuid)
     return GetsettingsOut(code=0, msg='success', settings=c.settings)
 
+
+
+# Vision
+
+class VisionIn(BaseModel):
+    img: str
+    pass
+
+class VisionOut(BaseModel):
+    code: int
+    msg: str
+
+@app.post("/demoboard/vision", response_model=VisionOut)
+def Vision(data: VisionIn):
+    """
+    #### Description
+    拐杖实时图传
+
+    #### Request
+    - uuid: 拐杖uuid
+    - img: 
+
+
+    #### Response
+    - code: 返回值:
+        - 0: 成功
+        - 1: 拐杖未注册
+        - 2：无法识别图片
+    - msg: 返回值信息
+    """
+
+    logger.debug(f"Recv heartbeat: {data}")
+
+    c = get_crutch_obj(data.uuid)
+
+    # TODO: Handle crutch-not-registered exceptation
+
+    if not c:
+        return VisionOut(code=1, msg='crutch has not been registered')
+
+    c.img = data.img
+
+    return VisionOut(code=0, msg='success')
 
 
 # ============ Android app ============
@@ -372,3 +415,10 @@ def get_status(uuid: str):
     return GetStatusOut(code=0, msg='success', status=c.status, loc=c.loc)
 
 
+
+# Get Vision
+
+class GetVisionOut(BaseModel):
+    code: int
+    msg: str
+    img: str

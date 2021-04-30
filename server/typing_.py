@@ -26,3 +26,6 @@ class CrutchSettings(BaseModel):
     # home_loc: Optional[Loc] = None
     phone: Optional[str] = None
     password: Optional[str] = None
+
+class CrutchImg(BaseModel):
+    img = None
