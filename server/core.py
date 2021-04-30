@@ -61,6 +61,17 @@ class Crutch(object):
         self._last_conn_time = time()
         self._status = status
 
+    @property
+    def img(self) -> CrutchImage:
+        if self._img == CrutchImage.ok and time() - self._last_conn_time > self.OFFLINE_TIME_THRESHOLD:
+            return CrutchImg.offline
+        return self._img
+
+    @image.setter
+    def image(self, status: CrutchImage):
+        self._last_conn_time = time()
+        self._image = image
+
 
 crutch_obj_list: List[Crutch]
 db: DataBase

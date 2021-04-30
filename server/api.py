@@ -35,6 +35,7 @@ class HeartbeatIn(BaseModel):
     uuid: str
     status: CrutchStatus
     loc: Optional[Loc]
+    imae: CrutchImage
 
 class HeartbeatOut(BaseModel):
     code: int
@@ -56,6 +57,7 @@ def heartbeat(data: HeartbeatIn):
     - loc: *可选项*，拐杖位置信息
         - latitude: 纬度
         - longitude: 经度
+    - image:拐杖跌倒照片，**字符串格式**
 
     #### Response
     - code: 返回值:
@@ -74,27 +76,9 @@ def heartbeat(data: HeartbeatIn):
     if not c:
         return HeartbeatOut(code=1, msg='crutch has not been registered')
 
-    c.status, c.loc = data.status, data.loc
+    c.status, c.loc, c.image= data.status, data.loc, data.image
 
     return HeartbeatOut(code=0, msg='success')
-
-
-
-# # Emergency
-#
-# class EmergencyIn(BaseModel):
-#     uuid: str
-#     loc: Optional[Loc]
-#
-# class EmergencyOut(BaseModel):
-#     code: int
-#     msg: str
-#
-# @app.post("/demoboard/emergency", response_model=EmergencyOut)
-# def emergency(data: EmergencyIn):
-#
-#     logger.debug(f"Recv emergency: {data}")
-#     return EmergencyOut(code=0, msg='success')
 
 
 
@@ -130,49 +114,6 @@ def get_settings(uuid: str):
         c = register_crutch(uuid)
     return GetsettingsOut(code=0, msg='success', settings=c.settings)
 
-
-
-# Vision
-
-class VisionIn(BaseModel):
-    img: str
-    pass
-
-class VisionOut(BaseModel):
-    code: int
-    msg: str
-
-@app.post("/demoboard/vision", response_model=VisionOut)
-def Vision(data: VisionIn):
-    """
-    #### Description
-    拐杖实时图传
-
-    #### Request
-    - uuid: 拐杖uuid
-    - img: 
-
-
-    #### Response
-    - code: 返回值:
-        - 0: 成功
-        - 1: 拐杖未注册
-        - 2：无法识别图片
-    - msg: 返回值信息
-    """
-
-    logger.debug(f"Recv heartbeat: {data}")
-
-    c = get_crutch_obj(data.uuid)
-
-    # TODO: Handle crutch-not-registered exceptation
-
-    if not c:
-        return VisionOut(code=1, msg='crutch has not been registered')
-
-    c.img = data.img
-
-    return VisionOut(code=0, msg='success')
 
 
 # ============ Android app ============
@@ -382,6 +323,7 @@ class GetStatusOut(BaseModel):
     msg: str
     status: CrutchStatus
     loc: Optional[Loc]
+    image: CrutchImage
 
 @app.get("/app/get_status/{uuid}", response_model=GetStatusOut)
 def get_status(uuid: str):
@@ -405,6 +347,7 @@ def get_status(uuid: str):
     - loc: *可选项*，拐杖位置信息
         - latitude: 纬度
         - longitude: 经度
+    - image: 拐杖照片
     """
 
     c = get_crutch_obj(uuid)
@@ -412,13 +355,7 @@ def get_status(uuid: str):
     if not c:
         logger.warning(f"Got invalid uuid: {uuid}")
         return UpdatesettingsOut(code=1, msg='invalid uuid')
-    return GetStatusOut(code=0, msg='success', status=c.status, loc=c.loc)
+    return GetStatusOut(code=0, msg='success', status=c.status, loc=c.loc, img=c.image)
 
 
 
-# Get Vision
-
-class GetVisionOut(BaseModel):
-    code: int
-    msg: str
-    img: str

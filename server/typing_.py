@@ -6,10 +6,9 @@ from pydantic import BaseModel
 
 class CrutchStatus(str, Enum):
     ok = 'ok' # ok
-    emergency = 'emergency' # fallen down
+    emergency = 'emergency' # fell down
     error = 'error' # demoboard internal error
     offline = 'offline' # offline
-    charging = 'charging' # battery charging
 
 class Loc(BaseModel):
     latitude: float
@@ -26,6 +25,3 @@ class CrutchSettings(BaseModel):
     # home_loc: Optional[Loc] = None
     phone: Optional[str] = None
     password: Optional[str] = None
-
-class CrutchImg(BaseModel):
-    img = None
