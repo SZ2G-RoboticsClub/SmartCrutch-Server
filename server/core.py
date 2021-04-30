@@ -29,11 +29,13 @@ class Crutch(object):
 
         self._settings = CrutchSettings()
 
-        self._image = CrutchImage.offline
+        self._image: Optional[image]
 
         if settings:
             self._settings = CrutchSettings.parse_raw(settings)
 
+        if image:
+            self._image = CrutchImage.parse_raw(image)
     @property
     def settings(self) -> CrutchSettings:
         return self._settings

@@ -26,5 +26,5 @@ class CrutchSettings(BaseModel):
     phone: Optional[str] = None
     password: Optional[str] = None
 
-class CrutchImage(BaseModel):
-    image = None
+class image(BaseModel):
+    image: str

@@ -44,7 +44,7 @@ class DataBase(object):
         self.cursor.execute('UPDATE settings SET username = ? WHERE uuid = ?;', (username, uuid))
         self.conn.commit()
 
-    def update_image(self, uuid: str, image: str):
+    def update_image(self, uuid: str, image: Optional[image]):
         self.cursor.execute('UPDATE settings SET image = ? WHERE uuid = ?;', (image, uuid))
         self.conn.commit()
 

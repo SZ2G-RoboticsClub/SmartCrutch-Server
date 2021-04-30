@@ -323,7 +323,7 @@ class GetStatusOut(BaseModel):
     msg: str
     status: CrutchStatus
     loc: Optional[Loc]
-    image: CrutchImage
+    image: Optional[image]
 
 @app.get("/app/get_status/{uuid}", response_model=GetStatusOut)
 def get_status(uuid: str):
