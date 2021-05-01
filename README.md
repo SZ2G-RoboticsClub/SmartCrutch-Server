@@ -47,8 +47,9 @@ SmartCrutch-v4 Server Repo
     - 0: 成功
 - msg: 返回值信息
 - settings: 设置信息
-    - phone: *可选项*，电话号码
+    - phone: *可选项*，紧急联系人电话号码
     - password: *可选项*，App登录密码
+    - home: *可选项*，家庭住址
   
 
 ## App Api
@@ -108,8 +109,9 @@ Android App Api
 #### Request
 - uuid: 拐杖uuid
 - settings: 拐杖设置信息
-    - phone: *可选项*，电话号码
+    - phone: *可选项*，紧急联系人电话号码
     - password: App登录密码，不可为空
+    - home: *可选项*，家庭住址
 
 #### Response
 - code: 返回值:
@@ -135,8 +137,9 @@ Android App Api
     - 1: 无效的uuid
 - msg: 返回值信息
 - settings: 设置信息
-    - phone: *可选项*，电话号码
-    - password: App登录密码
+    - phone: *可选项*，紧急联系人电话号码
+    - password: *可选项*，App登录密码
+    - home: *可选项*，家庭住址
 
 ### Get Status
 
