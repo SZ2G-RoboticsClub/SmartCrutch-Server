@@ -4,7 +4,7 @@ from typing import Optional, List
 from loguru import logger
 
 from server.database import DataBase
-from server.typing_ import CrutchStatus, Loc, CrutchSettings, CrutchImage
+from server.typing_ import CrutchStatus, Loc, CrutchSettings
 
 
 class Crutch(object):
@@ -29,13 +29,13 @@ class Crutch(object):
 
         self._settings = CrutchSettings()
 
-        self._image: Optional[image]
+        # self._image: Optional[image]
 
         if settings:
             self._settings = CrutchSettings.parse_raw(settings)
 
-        if image:
-            self._image = CrutchImage.parse_raw(image)
+        # if image:
+        #     self._image = CrutchImage.parse_raw(image)
     @property
     def settings(self) -> CrutchSettings:
         return self._settings
@@ -65,16 +65,16 @@ class Crutch(object):
         self._last_conn_time = time()
         self._status = status
 
-    @property
-    def img(self) -> CrutchImage:
-        if self._img == CrutchImage.ok and time() - self._last_conn_time > self.OFFLINE_TIME_THRESHOLD:
-            return CrutchImg.offline
-        return self._img
+    # @property
+    # def image(self) -> CrutchImage:
+    #     if self._img == CrutchImage.ok and time() - self._last_conn_time > self.OFFLINE_TIME_THRESHOLD:
+    #         return CrutchImg.offline
+    #     return self._img
 
-    @image.setter
-    def image(self, status: CrutchImage):
-        self._last_conn_time = time()
-        self._image = image
+    # @image.setter
+    # def image(self, status: CrutchImage):
+    #     self._last_conn_time = time()
+    #     self._image = image
 
 
 crutch_obj_list: List[Crutch]
@@ -84,7 +84,7 @@ db: DataBase
 def load_database():
     global crutch_obj_list, db
     db = DataBase()
-    crutch_obj_list = [Crutch(uuid, username, settings, image) for uuid, username, settings, image in db.read_all()]
+    crutch_obj_list = [Crutch(uuid, username, settings) for uuid, username, settings in db.read_all()]
 
 
 def get_crutch_uuid(username: str) -> Optional[str]:
