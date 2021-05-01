@@ -8,9 +8,14 @@ from server.typing_ import CrutchStatus, Loc, CrutchSettings
 
 
 class Crutch(object):
+
+    # If the time delta between crutch's last heartbeat and now exceeds the threshold,
+    # judge the crutch is offline.
+    # ** THE THRESHOLD SHOULD BE LONGER THAN THE HEARTBEAT INTERVAL SET ON THE DEMOBOARD **
     OFFLINE_TIME_THRESHOLD: float = 8.0
 
     def __eq__(self, other):
+        # For finding crutch obj with uuid or username
         return self.uuid == other.uuid or (self.username and self.username == other.username)
 
     def __init__(self, uuid: Optional[str] = None,
@@ -53,7 +58,11 @@ class Crutch(object):
     @property
     def status(self) -> CrutchStatus:
         if self._status == CrutchStatus.ok and time() - self._last_conn_time > self.OFFLINE_TIME_THRESHOLD:
+
+            # The time delta between crutch's last connection and now
+            # exceeds OFFLINE_TIME_THRESHOLD, return Offline status
             return CrutchStatus.offline
+
         return self._status
 
     @status.setter
@@ -62,17 +71,29 @@ class Crutch(object):
         self._status = status
 
 
+# Crutch obj list, the crutch instances are maintained in the list while running
 crutch_obj_list: List[Crutch]
+
+# database instance
 db: DataBase
 
 
 def load_database():
+    """
+    **INTERNAL FUNCTION**
+    Load all crutch obj from database. Being called automatically when server initializing.
+    """
     global crutch_obj_list, db
     db = DataBase()
     crutch_obj_list = [Crutch(uuid, username, settings) for uuid, username, settings in db.read_all()]
 
 
 def get_crutch_uuid(username: str) -> Optional[str]:
+    """
+    Get a crutch uuid with username. Mainly used for app login.
+    :param username: the username crutch bound
+    :return: uuid if the crutch is found, otherwise return None
+    """
     try:
         idx = crutch_obj_list.index(Crutch(username=username))
     except ValueError:
@@ -82,6 +103,11 @@ def get_crutch_uuid(username: str) -> Optional[str]:
 
 
 def get_crutch_obj(uuid: str) -> Optional[Crutch]:
+    """
+    Get a registered crutch obj with uuid.
+    :param uuid: cruch UUID
+    :return: crutch obj if the obj exist, otherwise return None
+    """
     try:
         idx = crutch_obj_list.index(Crutch(uuid=uuid))
     except ValueError:
