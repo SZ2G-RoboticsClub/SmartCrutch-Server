@@ -13,7 +13,7 @@ from server.typing_ import CrutchStatus, CrutchSettings, Loc
 app = FastAPI(
     title="SmartCrutch API Docs",
     description="守护者云拐杖(SmartCrutch-v4)API文档",
-    version="0.2b"
+    version="0.3"
 )
 
 @app.exception_handler(RequestValidationError)
@@ -68,7 +68,7 @@ def heartbeat(data: HeartbeatIn):
 
     c = get_crutch_obj(data.uuid)
 
-    # TODO: Handle crutch-not-registered exceptation
+    # TODO: Handle crutch-not-registered exception
 
     if not c:
         return HeartbeatOut(code=1, msg='crutch has not been registered')
@@ -337,7 +337,6 @@ class GetStatusOut(BaseModel):
     code: int
     msg: str
     status: CrutchStatus
-    loc: Optional[Loc]
 
 @app.get("/app/get_status/{uuid}", response_model=GetStatusOut)
 def get_status(uuid: str):
@@ -358,6 +357,38 @@ def get_status(uuid: str):
         - 'emergency': 摔倒
         - 'error': 错误
         - 'offline': 离线
+    """
+
+    c = get_crutch_obj(uuid)
+
+    if not c:
+        logger.warning(f"Got invalid uuid: {uuid}")
+        return UpdatesettingsOut(code=1, msg='invalid uuid')
+    return GetStatusOut(code=0, msg='success', status=c.status)
+
+
+
+# Get loc
+
+class GetLocOut(BaseModel):
+    code: int
+    msg: str
+    loc: Optional[Loc]
+
+@app.get("/app/get_loc/{uuid}", response_model=GetLocOut)
+def get_loc(uuid: str):
+    """
+    #### Description
+    获取拐杖状态信息
+
+    #### Request
+    - uuid: 拐杖uuid
+
+    #### Response
+    - code: 返回值:
+        - 0: 成功
+        - 1: 无效的uuid
+    - msg: 返回值信息
     - loc: *可选项*，拐杖位置信息
         - latitude: 纬度
         - longitude: 经度
@@ -368,4 +399,4 @@ def get_status(uuid: str):
     if not c:
         logger.warning(f"Got invalid uuid: {uuid}")
         return UpdatesettingsOut(code=1, msg='invalid uuid')
-    return GetStatusOut(code=0, msg='success', status=c.status, loc=c.loc)
+    return GetLocOut(code=0, msg='success', loc=c.loc)
