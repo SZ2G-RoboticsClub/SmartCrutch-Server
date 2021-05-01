@@ -102,8 +102,9 @@ def get_settings(uuid: str):
         - 0: 成功
     - msg: 返回值信息
     - settings: 设置信息
-        - phone: *可选项*，电话号码
+        - phone: *可选项*，紧急联系人电话号码
         - password: *可选项*，App登录密码
+        - home: *可选项*，老人家庭住址
     """
 
     logger.debug(f"Recv get settings req from {uuid}")
@@ -249,8 +250,9 @@ def update_settings(data: UpdatesettingsIn):
     #### Request
     - uuid: 拐杖uuid
     - settings: 拐杖设置信息
-        - phone: *可选项*，电话号码
+        - phone: *可选项*，紧急联系人电话号码
         - password: App登录密码，不可为空
+        - home: *可选项*，老人家庭住址
 
     #### Response
     - code: 返回值:
@@ -300,8 +302,9 @@ def app_get_settings(uuid: str):
         - 1: 无效的uuid
     - msg: 返回值信息
     - settings: 设置信息
-        - phone: *可选项*，电话号码
+        - phone: *可选项*，紧急联系人电话号码
         - password: App登录密码
+        - home: *可选项*，老人家庭住址
     """
     logger.debug(f"Recv get settings req from app: uuid={uuid}")
     c = get_crutch_obj(uuid)

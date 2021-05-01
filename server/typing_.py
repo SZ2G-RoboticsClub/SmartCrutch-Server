@@ -25,4 +25,5 @@ class CrutchSettings(BaseModel):
     # home_loc: Optional[Loc] = None
     phone: Optional[str] = None
     password: Optional[str] = None
+    home: Optional[str] = None
 
