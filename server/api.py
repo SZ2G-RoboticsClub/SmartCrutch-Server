@@ -356,5 +356,6 @@ def get_status(uuid: str):
         return UpdatesettingsOut(code=1, msg='invalid uuid')
     return GetStatusOut(code=0, msg='success', status=c.status, loc=c.loc)
 
+#测试push是否正常
 
 
