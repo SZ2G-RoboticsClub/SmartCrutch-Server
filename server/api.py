@@ -61,7 +61,6 @@ def heartbeat(data: HeartbeatIn):
     - code: 返回值:
         - 0: 成功
         - 1: 拐杖未注册
-        - 2：无法识别图片
     - msg: 返回值信息
     """
 
