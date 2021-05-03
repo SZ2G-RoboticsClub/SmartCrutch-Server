@@ -12,15 +12,17 @@ class CrutchStatus(str, Enum):
 
 class Loc(BaseModel):
     latitude: float
-    longitude: float
+    longitude: float    
+
+class Falltime(BaseModel):
+    date: str
+    time: str
 
 class CrutchSettings(BaseModel):
     """
-    - home_loc: *可选项*，家庭地址
-        - latitude: 纬度
-        - longitude: 经度
     - phone:
     - password:
+    - home:家庭住址（str）
     """
     # home_loc: Optional[Loc] = None
     phone: Optional[str] = None

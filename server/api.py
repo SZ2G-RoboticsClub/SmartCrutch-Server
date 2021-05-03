@@ -8,7 +8,7 @@ from loguru import logger
 from pydantic import BaseModel
 
 from server.core import get_crutch_obj, register_crutch, get_crutch_uuid
-from server.typing_ import CrutchStatus, CrutchSettings, Loc
+from server.typing_ import CrutchStatus, CrutchSettings, Loc, Falltime
 
 app = FastAPI(
     title="SmartCrutch API Docs",
@@ -35,6 +35,7 @@ class HeartbeatIn(BaseModel):
     uuid: str
     status: CrutchStatus
     loc: Optional[Loc]
+    falltime: Optional[Falltime]
 
 class HeartbeatOut(BaseModel):
     code: int
@@ -56,6 +57,9 @@ def heartbeat(data: HeartbeatIn):
     - loc: *可选项*，拐杖位置信息
         - latitude: 纬度
         - longitude: 经度
+    - falltime: *可选项*，老人摔倒时间
+        - date: 日期，年月日
+        - time: 时间，时分秒
 
     #### Response
     - code: 返回值:
@@ -73,7 +77,7 @@ def heartbeat(data: HeartbeatIn):
     if not c:
         return HeartbeatOut(code=1, msg='crutch has not been registered')
 
-    c.status, c.loc= data.status, data.loc
+    c.status, c.loc, c.falltime= data.status, data.loc, data.falltime
 
     return HeartbeatOut(code=0, msg='success')
 
@@ -323,6 +327,7 @@ class GetStatusOut(BaseModel):
     msg: str
     status: CrutchStatus
     loc: Optional[Loc]
+    falltime: Optional[Falltime]
 
 @app.get("/app/get_status/{uuid}", response_model=GetStatusOut)
 def get_status(uuid: str):
@@ -346,6 +351,9 @@ def get_status(uuid: str):
     - loc: *可选项*，拐杖位置信息
         - latitude: 纬度
         - longitude: 经度
+    - falltime: *可选项*，老人摔倒时间
+        - date: 日期，年月日
+        - time: 时间，时分秒
     """
 
     c = get_crutch_obj(uuid)
@@ -353,8 +361,5 @@ def get_status(uuid: str):
     if not c:
         logger.warning(f"Got invalid uuid: {uuid}")
         return UpdatesettingsOut(code=1, msg='invalid uuid')
-    return GetStatusOut(code=0, msg='success', status=c.status, loc=c.loc)
-
-#测试push是否正常
-
+    return GetStatusOut(code=0, msg='success', status=c.status, loc=c.loc, falltime=c.falltime)
 

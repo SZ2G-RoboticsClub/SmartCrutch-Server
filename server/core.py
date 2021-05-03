@@ -4,7 +4,7 @@ from typing import Optional, List
 from loguru import logger
 
 from server.database import DataBase
-from server.typing_ import CrutchStatus, Loc, CrutchSettings
+from server.typing_ import CrutchStatus, Loc, CrutchSettings, Falltime
 
 
 class Crutch(object):
@@ -31,6 +31,7 @@ class Crutch(object):
         self._last_conn_time = 0
 
         self.loc: Optional[Loc] = None
+        self.falltime: Optional[Falltime] = None
 
         self._settings = CrutchSettings()
 
