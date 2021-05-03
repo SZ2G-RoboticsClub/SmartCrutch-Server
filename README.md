@@ -23,6 +23,9 @@ SmartCrutch-v4 Server Repo
 - loc: *可选项*，位置经纬度数据
     - latitude: 纬度
     - longitude: 经度
+- fall_time: *可选项*，老人摔倒时间
+    - date: 日期，年月日
+    - time: 时间，时分秒
 
 #### Response
 - code: 返回值:
@@ -165,3 +168,6 @@ Android App Api
 - loc: 拐杖位置信息
     - latitude: 纬度
     - longitude: 经度
+- fall_time: *可选项*，老人摔倒时间
+    - date: 日期，年月日
+    - time: 时间，时分秒
