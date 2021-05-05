@@ -12,11 +12,8 @@ class CrutchStatus(str, Enum):
 
 class Loc(BaseModel):
     latitude: float
-    longitude: float    
-
-class Falltime(BaseModel):
-    date: str
-    time: str
+    longitude: float
+    info: str 
 
 class CrutchSettings(BaseModel):
     """
