@@ -10,14 +10,14 @@
     <string name="error_user_not_exist">该用户不存在</string>
     <string name="error_password_incorrect">密码错误</string>
     <string name="error_network">网络连接错误</string>
-    <string name="error_validation">Validation error</string>
+    <string name="error_validation">内部错误</string>
     <string name="app_short_info">守护者云拐杖 v0.3b</string>
     <string name="login_success">登录成功</string>
     <string name="status_image_description">Crutch status</string>
-    <string name="text_view_dashboard">守护者云拐杖</string>
+    <string name="text_view_dashboard">控制台</string>
     <string name="back_again_to_exit">再次点击以退出</string>
     <string name="toast_require_login">请登录您的账号！</string>
-    <string name="button_view_map">查看老人当前位置</string>
+    <string name="button_view_map">查看位置</string>
     <string name="button_launch_settings">设置</string>
     <string name="button_launch_about">关于</string>
     <string name="user_info_text_view">UUID: %s</string>
