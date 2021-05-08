@@ -102,7 +102,7 @@ def heartbeat(data: HeartbeatIn):
 class GetsettingsOut(BaseModel):
     code: int
     msg: str
-    settings: CrutchSettings
+    settings: Optional[CrutchSettings]
 
 @app.get("/demoboard/get_settings/{uuid}", response_model=GetsettingsOut)
 def get_settings(uuid: str):
@@ -121,6 +121,7 @@ def get_settings(uuid: str):
     - settings: 设置信息
         - phone: *可选项*，电话号码
         - password: *可选项*，App登录密码
+        - home: *可选项*，家庭住址
     """
 
     logger.debug(f"Recv get settings req from {uuid}")
@@ -268,6 +269,7 @@ def update_settings(data: UpdatesettingsIn):
     - settings: 拐杖设置信息
         - phone: *可选项*，电话号码
         - password: App登录密码，不可为空
+        - home: *可选项*，家庭住址
 
     #### Response
     - code: 返回值:
@@ -319,6 +321,7 @@ def app_get_settings(uuid: str):
     - settings: 设置信息
         - phone: *可选项*，电话号码
         - password: App登录密码
+        - home: *可选项*，家庭住址
     """
     logger.debug(f"Recv get settings req from app: uuid={uuid}")
     c = get_crutch_obj(uuid)
@@ -336,7 +339,7 @@ def app_get_settings(uuid: str):
 class GetStatusOut(BaseModel):
     code: int
     msg: str
-    status: CrutchStatus
+    status: Optional[CrutchStatus]
 
 @app.get("/app/get_status/{uuid}", response_model=GetStatusOut)
 def get_status(uuid: str):
