@@ -20,6 +20,6 @@ class CrutchSettings(BaseModel):
     - password: *可选项*，App登录密码
     - home: *可选项*，家庭住址
     """
-    home: Optional[Loc] = None
+    home: Optional[str] = None
     phone: Optional[str] = None
     password: Optional[str] = None
