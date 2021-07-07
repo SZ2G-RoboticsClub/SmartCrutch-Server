@@ -13,6 +13,7 @@ class CrutchStatus(str, Enum):
 class Loc(BaseModel):
     latitude: float
     longitude: float
+    info: str
 
 class CrutchSettings(BaseModel):
     """
