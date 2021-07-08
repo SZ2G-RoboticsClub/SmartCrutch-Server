@@ -56,7 +56,6 @@ def heartbeat(data: HeartbeatIn):
     - loc: *可选项*，拐杖位置信息
         - latitude: 纬度
         - longitude: 经度
-        - info: 位置描述
 
     #### Response
     - code: 返回值:
@@ -378,7 +377,6 @@ def get_loc(uuid: str):
     - loc: *可选项*，拐杖位置信息
         - latitude: 纬度
         - longitude: 经度
-        - info: 位置描述
 
     """
 
