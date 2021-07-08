@@ -80,24 +80,6 @@ def heartbeat(data: HeartbeatIn):
 
 
 
-# # Emergency
-#
-# class EmergencyIn(BaseModel):
-#     uuid: str
-#     loc: Optional[Loc]
-#
-# class EmergencyOut(BaseModel):
-#     code: int
-#     msg: str
-#
-# @app.post("/demoboard/emergency", response_model=EmergencyOut)
-# def emergency(data: EmergencyIn):
-#
-#     logger.debug(f"Recv emergency: {data}")
-#     return EmergencyOut(code=0, msg='success')
-
-
-
 # GetSettings
 
 class GetsettingsOut(BaseModel):
