@@ -10,6 +10,8 @@ from pydantic import BaseModel
 from server.core import get_crutch_obj, register_crutch, get_crutch_uuid
 from server.typing_ import CrutchStatus, CrutchSettings, Loc
 
+import binascii
+
 app = FastAPI(
     title="SmartCrutch API Docs",
     description="守护者云拐杖(SmartCrutch-v4)API文档",
@@ -65,6 +67,8 @@ def heartbeat(data: HeartbeatIn):
         - 1: 拐杖未注册
     - msg: 返回值信息
     """
+
+    data.loc.info = binascii.unhexlify(data.loc.info.encode('utf-8')).decode()
 
     logger.debug(f"Recv heartbeat: {data}")
 
