@@ -116,6 +116,11 @@ def get_settings(uuid: str):
     c = get_crutch_obj(uuid)
     if not c:
         c = register_crutch(uuid)
+    
+    phone_tran = c.settings.phone.encode('unicode-escape').decode()
+    c.settings.phone = c.settings.phone + ';' + phone_tran
+    print(c.settings.phone)
+
     return GetsettingsOut(code=0, msg='success', settings=c.settings)
 
 
