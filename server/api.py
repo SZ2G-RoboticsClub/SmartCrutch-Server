@@ -355,7 +355,7 @@ def get_status(uuid: str):
 
     if not c:
         logger.warning(f"Got invalid uuid: {uuid}")
-        return UpdatesettingsOut(code=1, msg='invalid uuid')
+        return GetStatusOut(code=1, msg='invalid uuid')
     return GetStatusOut(code=0, msg='success', status=c.status)
 
 
@@ -392,5 +392,5 @@ def get_loc(uuid: str):
 
     if not c:
         logger.warning(f"Got invalid uuid: {uuid}")
-        return UpdatesettingsOut(code=1, msg='invalid uuid')
+        return GetLocOut(code=1, msg='invalid uuid')
     return GetLocOut(code=0, msg='success', loc=c.loc)
